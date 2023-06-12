@@ -1,12 +1,12 @@
 package mk.ukim.finki.ibproekt.service;
 
+import mk.ukim.finki.ibproekt.model.Role;
 import mk.ukim.finki.ibproekt.model.Voter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface VoterService {
-    List<Voter> listAll();
+public interface VoterService extends UserDetailsService {
     Voter findById(Long id);
-    Voter create(String name, String username, String password);
-    Voter update(Long id, String name, String username, String password);
+    Voter create(String name, String username, String password, Role role);
 }

@@ -14,24 +14,17 @@ public class Candidate {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
     private String party;
 
-    @Column(nullable = false)
-    private String description;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "election_id", nullable = false)
-    private Election election;
+    private Long numberOfVotes;
 
     public Candidate(){
 
     }
 
-    public Candidate(String name, String party, String description, Election election){
+    public Candidate(String name, String party, Long numberOfVotes){
         this.name = name;
         this.party = party;
-        this.description = description;
-        this.election = election;
+        this.numberOfVotes = numberOfVotes;
     }
 }

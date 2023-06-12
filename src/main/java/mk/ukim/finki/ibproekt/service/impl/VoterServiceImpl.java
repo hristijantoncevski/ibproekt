@@ -1,10 +1,15 @@
 package mk.ukim.finki.ibproekt.service.impl;
 
-import jakarta.transaction.Transactional;
+import mk.ukim.finki.ibproekt.model.Role;
 import mk.ukim.finki.ibproekt.model.Voter;
+import mk.ukim.finki.ibproekt.model.exceptions.InvalidUsernameOrPasswordException;
 import mk.ukim.finki.ibproekt.model.exceptions.InvalidVoterIdException;
+import mk.ukim.finki.ibproekt.model.exceptions.UsernameAlreadyExistsException;
 import mk.ukim.finki.ibproekt.repository.VoterRepository;
 import mk.ukim.finki.ibproekt.service.VoterService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,14 +17,11 @@ import java.util.List;
 @Service
 public class VoterServiceImpl implements VoterService {
     private final VoterRepository voterRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public VoterServiceImpl(VoterRepository voterRepository) {
+    public VoterServiceImpl(VoterRepository voterRepository, PasswordEncoder passwordEncoder) {
         this.voterRepository = voterRepository;
-    }
-
-    @Override
-    public List<Voter> listAll() {
-        return voterRepository.findAll();
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -28,17 +30,16 @@ public class VoterServiceImpl implements VoterService {
     }
 
     @Override
-    public Voter create(String name, String username, String password) {
-        return voterRepository.save(new Voter(name,username,password));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return voterRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
-    @Override
-    @Transactional
-    public Voter update(Long id, String name, String username, String password) {
-        Voter voter = voterRepository.findById(id).orElseThrow(InvalidVoterIdException::new);
-        voter.setName(name);
-        voter.setUsername(username);
-        voter.setPassword(password);
+    public Voter create(String name, String username, String password, Role role){
+        if (username==null || username.isEmpty()  || password==null || password.isEmpty())
+            throw new InvalidUsernameOrPasswordException();
+        if(this.voterRepository.findByUsername(username).isPresent())
+            throw new UsernameAlreadyExistsException(username);
+        Voter voter = new Voter(name,username,passwordEncoder.encode(password),role);
         return voterRepository.save(voter);
     }
 }

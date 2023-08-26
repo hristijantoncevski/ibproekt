@@ -6,11 +6,13 @@ import mk.ukim.finki.ibproekt.repository.CandidateRepository;
 import mk.ukim.finki.ibproekt.repository.VoterRepository;
 import mk.ukim.finki.ibproekt.service.CandidateService;
 import mk.ukim.finki.ibproekt.service.VoterService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping
@@ -54,7 +56,7 @@ public class CandidateController {
 
     @GetMapping("/election/results")
     public String getResults(Model model){
-        model.addAttribute("candidates", this.candidateRepository.findAll());
+        model.addAttribute("candidates", this.candidateRepository.findAll(Sort.by(Sort.Direction.DESC,"numberOfVotes")));
         model.addAttribute("bodyContent", "results");
         return "master-template";
     }

@@ -5,6 +5,7 @@ import mk.ukim.finki.ibproekt.model.Voter;
 import mk.ukim.finki.ibproekt.model.exceptions.InvalidUsernameOrPasswordException;
 import mk.ukim.finki.ibproekt.model.exceptions.InvalidVoterIdException;
 import mk.ukim.finki.ibproekt.model.exceptions.UsernameAlreadyExistsException;
+import mk.ukim.finki.ibproekt.model.exceptions.UsernameWithThatCnAlreadyExists;
 import mk.ukim.finki.ibproekt.repository.VoterRepository;
 import mk.ukim.finki.ibproekt.service.VoterService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,12 +35,15 @@ public class VoterServiceImpl implements VoterService {
         return voterRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
-    public Voter create(String name, String username, String password, Role role){
+    public Voter create(String name, String username, String password, Role role, String CN) throws UsernameWithThatCnAlreadyExists {
         if (username==null || username.isEmpty()  || password==null || password.isEmpty())
             throw new InvalidUsernameOrPasswordException();
         if(this.voterRepository.findByUsername(username).isPresent())
             throw new UsernameAlreadyExistsException(username);
-        Voter voter = new Voter(name,username,passwordEncoder.encode(password),role);
+        if(this.voterRepository.findByCN(CN).isPresent()) {
+            throw new UsernameWithThatCnAlreadyExists(CN);
+        }
+        Voter voter = new Voter(name,username,passwordEncoder.encode(password),role,CN);
         return voterRepository.save(voter);
     }
 }

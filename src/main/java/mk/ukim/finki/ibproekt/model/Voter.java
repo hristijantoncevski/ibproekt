@@ -1,6 +1,7 @@
 package mk.ukim.finki.ibproekt.model;
 
 import lombok.Data;
+import mk.ukim.finki.ibproekt.config.AESEncrypt;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,9 +16,11 @@ public class Voter implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Convert(converter = AESEncrypt.class)
     @Column(unique = true, nullable = false)
     private String username;
 
+    @Convert(converter = AESEncrypt.class)
     private String name;
 
     @Column(nullable = false)
@@ -26,6 +29,7 @@ public class Voter implements UserDetails {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
+    @Convert(converter = AESEncrypt.class)
     @Column(unique = true, nullable = false)
     private String CN;
 

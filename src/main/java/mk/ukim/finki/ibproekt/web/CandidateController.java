@@ -42,8 +42,8 @@ public class CandidateController {
 
     @GetMapping("/election/add")
     public String showAddCandidate(Model model){
-
-        return "add-candidate";
+        model.addAttribute("bodyContent", "add-candidate");
+        return "master-template";
     }
 
     @GetMapping("/election/edit/{id}")
@@ -51,7 +51,8 @@ public class CandidateController {
         Candidate candidate = this.candidateService.findById(id);
 
         model.addAttribute("candidate", candidate);
-        return "add-candidate";
+        model.addAttribute("bodyContent", "add-candidate");
+        return "master-template";
     }
 
     @GetMapping("/election/results")
